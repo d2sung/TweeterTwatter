@@ -25,8 +25,13 @@ class TweetCell: UITableViewCell {
     var tweet: Tweet!{
         didSet{
             nameLabel.text = tweet.name
-            userNameLabel.text = tweet.username
-            //timeStampLabel.text = tweet.timeStamp
+            userNameLabel.text = "@" + tweet.username!
+            
+            let dateFormatter = DateFormatter()
+        
+            let s = dateFormatter.string(from: tweet.timeStamp!)
+            
+            timeStampLabel.text = s
             profileImageView.setImageWith(tweet.profileImageURL!)
             tweetTextLabel.text = tweet.text
             self.retweetCount = tweet.retweetCount;
