@@ -17,6 +17,11 @@ class Tweet: NSObject {
     var name: String?
     var username: String?
     var profileImageURL: URL?
+    var statusID: Int = 0
+    var retweeted: Bool = false;
+    
+    var user: NSDictionary?
+    
     
     init(dictionary: NSDictionary) {
         text = dictionary["text"] as? String
@@ -29,11 +34,16 @@ class Tweet: NSObject {
         name = tweetUser.name as String?
         
         profileImageURL = tweetUser.profileURL as URL?
+        retweeted = (dictionary["retweeted"] as? Bool)!
+        
+        user = dictionary["user"] as? NSDictionary
+        
+        statusID = (dictionary["id"] as! Int?)!
         
         let timeStampString = dictionary["created_at"] as? String
         let formatter = DateFormatter()
         
-        formatter.dateFormat = "EEE MMM d HH:mm:ss Z y"
+        formatter.dateFormat = "EEE MMM d HH:mm:ss Z y "
         if let timeStampString = timeStampString{
             timeStamp = formatter.date(from: timeStampString) as Date?
         }
@@ -50,5 +60,6 @@ class Tweet: NSObject {
         return tweets
         
     }
-
 }
+
+

@@ -96,5 +96,35 @@ class TwitterClient: BDBOAuth1SessionManager {
             self.loginFailure?(error as! NSError)
         })
     }
+    
+    
+    func postStatus(text: String, completion: (NSError) -> ()){
+        post("1.1/statuses/update.json", parameters: text, progress: nil, success: { (task: URLSessionDataTask, response: Any?) -> Void in
+            print("successful tweet")
+        
+        }, failure: { (task: URLSessionDataTask?, error: Error) in
+            print("unsuccesful tweet")
+        })
+}
+    
+    func retweet(id: Int, success: @escaping (Tweet) -> (), failure: @escaping (Error)->()) {
+        
+        post("1.1/statuses/retweet/\(id).json", parameters: ["id": id], progress: nil, success: { (task: URLSessionDataTask, response: Any?) in
+            print ("successful retweet")
+        }) { (task: URLSessionDataTask?, error: Error) in
+            failure(error)        }
+        
+    }
+    
+    func unRetweet(id: Int, success: @escaping (Tweet) -> (), failure: @escaping (Error)->()) {
+        
+        post("1.1/statuses/unretweet/\(id).json", parameters: ["id": id], progress: nil, success: { (task: URLSessionTask, response: Any?) in
+            print ("successful unretweet")
+        
+        } ) { (task: URLSessionDataTask?, error: Error) in
+            failure(error)
+
+        }
 
     }
+}

@@ -42,6 +42,11 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
         // Dispose of any resources that can be recreated.
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        //Change the selected background view of the cell.
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
     @IBAction func onLogout(_ sender: Any) {
         TwitterClient.sharedInstance?.logout()
     }
@@ -63,14 +68,44 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     
-   /*
+   
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+        
+        
+        if (segue.identifier == "myProfile"){
+            let nextScene = segue.destination as! ProfileViewController
+            let tweetIndex = tableView.indexPathForSelectedRow?.row;
+            
+           
+            nextScene.userProfileBool = true;
+        }
+        
+        else if (segue.identifier == "imageProfile"){
+            let nextScene = segue.destination as! ProfileViewController
+            nextScene.userProfileBool = false;
+            
+            if let button = sender as? UIButton {
+                
+                let cell = button.superview?.superview as! UITableViewCell
+                let indexPath = tableView.indexPath(for: cell)
+                let tweet = tweets[(indexPath?.row)!]
+                nextScene.tweet = tweet //set the user
+            }
+        }
+        
+        else {
+            let nextScene = segue.destination as! TweetViewController
+            let tweetIndex = tableView.indexPathForSelectedRow?.row;
+            
+            nextScene.tweet = tweets[tweetIndex!]
+            
+        }
+        
+        
     }
-    */
+    
 
 }
