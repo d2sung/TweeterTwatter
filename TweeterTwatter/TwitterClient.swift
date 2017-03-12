@@ -107,24 +107,70 @@ class TwitterClient: BDBOAuth1SessionManager {
         })
 }
     
+    
+    //Tweet Function
+    
+    class func postUpdate(status: String, callBack: @escaping (_ response: Tweet?, _ error: Error?) -> Void) {
+        
+        let encodedTweet = status.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)
+        
+        TwitterClient.sharedInstance?.post("https://api.twitter.com/1.1/statuses/update.json?status=" + encodedTweet!, parameters: nil, progress: nil, success: { (URLSessionDataTask, response: Any?) -> Void in
+            print ("successful tweet")
+           
+            
+        }, failure: { (URLSessionDataTask, error: Error) -> Void in
+            print(error.localizedDescription)
+        })
+    }
+
+    
+    
     func retweet(id: Int, success: @escaping (Tweet) -> (), failure: @escaping (Error)->()) {
         
-        post("1.1/statuses/retweet/\(id).json", parameters: ["id": id], progress: nil, success: { (task: URLSessionDataTask, response: Any?) in
+        post("1.1/statuses/retweet/\(id).json", parameters: ["id": id], progress: nil, success: { (task: URLSessionDataTask, response: Any?) -> Void in
+            
             print ("successful retweet")
-        }) { (task: URLSessionDataTask?, error: Error) in
-            failure(error)        }
-        
+        }) {
+            
+            (task: URLSessionDataTask?, error: Error) -> Void in
+            failure(error)
+        }
     }
     
     func unRetweet(id: Int, success: @escaping (Tweet) -> (), failure: @escaping (Error)->()) {
         
-        post("1.1/statuses/unretweet/\(id).json", parameters: ["id": id], progress: nil, success: { (task: URLSessionTask, response: Any?) in
+        post("1.1/statuses/unretweet/\(id).json", parameters: ["id": id], progress: nil, success: { (task: URLSessionTask, response: Any?) -> Void in
+            
             print ("successful unretweet")
         
-        } ) { (task: URLSessionDataTask?, error: Error) in
+        } )
+        
+        {(task: URLSessionDataTask?, error: Error) in
             failure(error)
 
         }
 
+    }
+    
+    
+    func fav(id: Int, success: @escaping (Tweet) -> (), failure: @escaping (Error)->()) {
+        
+        post("/1.1/favorites/create.json?id=" + String(id), parameters: ["id": id], progress: nil, success: {(task: URLSessionTask, response: Any?) -> Void in
+        
+            print("successful favorite")
+            
+        }) { (task: URLSessionTask?, error: Error) -> Void in
+            failure(error)
+        }
+    }
+    
+    func unFav(id: Int, success: @escaping (Tweet) -> (), failure: @escaping (Error)->()) {
+        post("https://api.twitter.com/1.1/favorites/destroy.json?id=" + String(id), parameters: ["id": id], progress: nil, success: { (task: URLSessionTask, response: Any?) -> Void in
+            
+            print("successful unfavorite")
+            
+        }) { (task: URLSessionTask?, error: Error) -> Void in
+            failure(error)
+        }
     }
 }

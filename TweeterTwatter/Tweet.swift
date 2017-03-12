@@ -19,6 +19,7 @@ class Tweet: NSObject {
     var profileImageURL: URL?
     var statusID: Int = 0
     var retweeted: Bool = false;
+    var favorited: Bool = false;
     
     var user: NSDictionary?
     
@@ -35,6 +36,7 @@ class Tweet: NSObject {
         
         profileImageURL = tweetUser.profileURL as URL?
         retweeted = (dictionary["retweeted"] as? Bool)!
+        favorited = (dictionary["favorited"] as? Bool)!
         
         user = dictionary["user"] as? NSDictionary
         

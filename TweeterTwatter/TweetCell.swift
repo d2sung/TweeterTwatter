@@ -18,10 +18,9 @@ class TweetCell: UITableViewCell {
     @IBOutlet weak var favCountLabel: UILabel!
     @IBOutlet weak var retweetCountLabel: UILabel!
     
-    var retweetCount: Int = 0
-    var favoritesCount: Int = 0
-    
-    
+    @IBOutlet weak var retweetButton: UIButton!
+    @IBOutlet weak var favButton: UIButton!
+
     var tweet: Tweet!{
         didSet{
             nameLabel.text = tweet.name
@@ -34,17 +33,43 @@ class TweetCell: UITableViewCell {
             timeStampLabel.text = s
             profileImageView.setImageWith(tweet.profileImageURL!)
             tweetTextLabel.text = tweet.text
-            self.retweetCount = tweet.retweetCount;
-            self.favoritesCount = tweet.favoritesCount;
             
-            retweetCountLabel.text = String (self.retweetCount)
-            favCountLabel.text = String (self.favoritesCount)
+            retweetCountLabel.text = String (tweet.retweetCount)
+            favCountLabel.text = String(tweet.favoritesCount)
             
-            print("Retweet count: \(self.retweetCount)")
             
-            print ("Fav count: \(self.favoritesCount)")
         }
     }
+    
+    override func layoutSubviews(){
+        super.layoutSubviews();
+        retweetCountLabel.text = String (tweet.retweetCount)
+        favCountLabel.text = String(tweet.favoritesCount)
+        
+        //Set button icons
+        if (tweet?.retweeted)! {
+            let image = UIImage(named: "retweet-icon-green")
+            retweetButton.setImage(image, for: UIControlState.normal)
+        }
+            
+        else {
+            let image = UIImage(named: "retweet-icon")
+            retweetButton.setImage(image, for: UIControlState.normal)
+        }
+        
+        if (tweet?.favorited)! {
+            let image = UIImage(named: "favor-icon-red")
+            favButton.setImage(image, for: UIControlState.normal)
+        }
+            
+        else {
+            let image = UIImage(named: "favor-icon")
+            favButton.setImage(image, for: UIControlState.normal)
+        }
+
+    }
+    
+   
     
     
     override func awakeFromNib() {
@@ -57,19 +82,79 @@ class TweetCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
+    
+    
+    
     @IBAction func onFavorite(_ sender: Any) {
         
-        favoritesCount = favoritesCount + 1
+        if (tweet?.favorited)!{
+            TwitterClient.sharedInstance?.unFav(id: (tweet?.statusID)!, success: { (tweet: Tweet) in
+                
+            }, failure: { (error: Error) in
+                print(error.localizedDescription)
+            })
+            
+            let image = UIImage(named: "favor-icon")
+            self.favButton.setImage(image, for: UIControlState.normal)
+            
+            tweet?.favoritesCount = (tweet?.favoritesCount)! - 1
+            tweet?.favorited = false;
+            
+        }
+            
+        else {
+            TwitterClient.sharedInstance?.fav(id: (tweet?.statusID)!, success: { (tweet: Tweet) in
+                
+            }, failure: { (error: Error) in
+                print(error.localizedDescription)
+            })
+            
+            let image = UIImage(named: "favor-icon-red.png")
+            self.favButton.setImage(image, for: UIControlState.normal)
+            
+            tweet?.favoritesCount = (tweet?.favoritesCount)! + 1
+            tweet?.favorited = true;
+        }
+
         
         
-              favCountLabel.text = String (self.favoritesCount)
+        favCountLabel.text = String (tweet.favoritesCount)
 
     }
     
     @IBAction func onRetweet(_ sender: Any) {
-        retweetCount = retweetCount + 1
-        retweetCountLabel.text = String (self.retweetCount)
+        if (tweet?.retweeted)! {
+            TwitterClient.sharedInstance?.unRetweet(id: (tweet?.statusID)!, success: { (tweet: Tweet) in
+                
+            }, failure: { (error: Error) in
+                print(error.localizedDescription)
+            })
+            
+            let image = UIImage(named: "retweet-icon")
+            
+            self.retweetButton.setImage(image, for: .normal)
+            
+            tweet?.retweeted = false
+            tweet?.retweetCount =  (tweet?.retweetCount)! - 1
+        }
+            
+            
+        else {
+            print(tweet?.statusID)
+            TwitterClient.sharedInstance?.retweet(id: (tweet?.statusID)!, success: { (tweet: Tweet) in
+                
+                
+            }, failure: { (error: Error) in
+                print(error.localizedDescription)
+            })
+            
+            let image = UIImage(named: "retweet-icon-green")
+            self.retweetButton.setImage(image, for: UIControlState.normal)
+            
+            tweet?.retweetCount =  (tweet?.retweetCount)! + 1
+            tweet?.retweeted = true
+        }
+        
+        retweetCountLabel.text = String (tweet.retweetCount)
     }
-    
-
 }

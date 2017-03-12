@@ -11,17 +11,22 @@ import UIKit
 class ComposeViewController: UIViewController {
 
     @IBOutlet weak var tweetField: UITextView!
-    
+    var recipient: String!
+    var fromReply: Bool = false;
     override func viewDidLoad() {
         super.viewDidLoad()
         tweetField.becomeFirstResponder()
-        // Do any additional setup after loading the view.
+        
+        if fromReply {
+            tweetField.text = "@" + recipient
+        }
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+
     
 
     /*
@@ -33,15 +38,18 @@ class ComposeViewController: UIViewController {
         // Pass the selected object to the new view controller.
     }
     */
-    /*@IBAction func tweetButtonPressed(_ sender: Any) {
+    @IBAction func tweetButtonPressed(_ sender: Any) {
         let text = tweetField.text
         
         let params = "status=\(text)&display_coordinates=false"
         
-        let status = TwitterClient.sharedInstance?.postStatus(text: params, completion: {(error) -> () in })
+        TwitterClient.postUpdate(status: text!, callBack: { (tweet, error) in
+            self.tweetField.text = ""
+            self.tweetField.endEditing(true)
+        })
         
     
     
-    }*/
+    }
 
 }

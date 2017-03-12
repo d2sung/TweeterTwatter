@@ -17,12 +17,17 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.estimatedRowHeight = 150
-        tableView.rowHeight = UITableViewAutomaticDimension
+        print("reloaded")
         
         tableView.dataSource = self
         tableView.delegate = self
         
+        
+        self.tableView.reloadData()
+        tableView.estimatedRowHeight = 150
+        tableView.rowHeight = UITableViewAutomaticDimension
+        
+      
         TwitterClient.sharedInstance?.homeTimeline(success: { (tweets: [Tweet]) -> () in
             self.tweets = tweets
             print(tweets.count)
@@ -36,6 +41,13 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
         
         // Do any additional setup after loading the view.
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tableView.reloadData()
+    }
+    
+   
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -63,6 +75,8 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TweetCell", for: indexPath) as! TweetCell
         cell.tweet = tweets[indexPath.row]
+               
+
         
         return cell
     }
